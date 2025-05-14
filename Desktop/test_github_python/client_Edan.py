@@ -61,6 +61,6 @@ class Client:
 
 # Si le numéro de compteur est enregistré dans le dictionnaire avec  les informations du client.
 #     Enregistre la transaction.
-client = Client('Paterne','066868778', 'zambopaterne9@gmail.com', 'Boulangerie23')
+client = Client('Paterne','066868778', 'idontknow@gmail.com', '1234')
 
 # ({'Nom':nom, 'mot_de_passe': mot_de_passe, 'telephone': telephone, 'mail':mail, 'numeo_de_compteur':numero_de_compteur})

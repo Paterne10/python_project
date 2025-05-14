@@ -54,37 +54,186 @@ class Eleve:
 # On parcours la liste d'objets et à chaque objet on applique la methode afficher().
 # for eleve in eleves:
 #     eleve.afficher()
-
+# -----------------------------------------------------------------------------------
 # Exercice 4: Banque- Gestion d'un compte
+from colorama import Fore, Back, Style
 
 class CompteBancaire:
-
+    MONNAIE = 'FCFA'
     def __init__(self,titulaire:str, solde:int = 0):
         self.titulaire = titulaire
         self.solde = solde
 
-    def deposer_montant(self):
-        print('Effectuer un depot sur votre compte.'.capitalize())
+    def menu(self):
+        print('Compte actif:', Fore.GREEN + self.titulaire + Fore.RESET)
+        print('*'*10 ,'Menu','*'*10)
 
-        depot = int(input('Entrer le montant: '))
-        self.solde += depot  
+        print("1. Afficher le solde")
+        print("2. Déposer de l'argent.")
+        print("3. Retirer de l'argent.")
+        print("4. Quitter.")
 
+
+    def choix_client(self):
+        while True:
+            self.menu()
+            choix_utilisateur = self.test_entree_choix_client('Répondre : ')
+            
+            if choix_utilisateur == 4 :
+                break
+       
+            if choix_utilisateur == 1:
+                self.afficher_solde()
+
+            elif choix_utilisateur == 2:
+                self.deposer()
+
+            elif choix_utilisateur == 3:
+                self.retirer() 
+            print()
+
+
+    def deposer(self):
+        print('EFFECTUER UN DEPOT SUR VOTRE COMPTE.')
+
+        depot = CompteBancaire.obtenir_une_valeur_numerique('Entrer le montant que vous souhaitez déposer dans votre compte (0. Acceuil): ')
+        if depot == 0:
+        #    self.menu()
+           return
+        else:                   
+            self.solde += depot
+            print(f'Vous avez effectué un dépôt {depot} {CompteBancaire.MONNAIE} sur votre compte. Votre solde est désormais de {self.solde} {CompteBancaire.MONNAIE}')
+         
     def retirer(self):   
-        print("Retirer de l'argent".capitalize())  
+        print("RETIRER DE L'ARGENT.") 
 
-        montant_a_retitrer = int(input('Entrer le montant que vous souhaitez retirer: '))  
-        if montant_a_retitrer >= self.solde:
-            self.solde - montant_a_retitrer
+        montant_a_retirer = CompteBancaire.obtenir_une_valeur_numerique('Entrer le montant que vous souhaitez retirer (0. Acceuil): ')
+
+        if montant_a_retirer == 0:
+            # self.menu()
+            return
+
+        elif montant_a_retirer <= self.solde:
+            self.solde -= montant_a_retirer
+            print(f'Vous avez recu {montant_a_retirer} {self.MONNAIE} en cash.')
+            print(f'Votre nouveau solde est de : {self.solde} {self.MONNAIE}' )
+
         else:
-            print('Fonds insufissants.')
+            print('Fonds insufisants.')
 
     def afficher_solde(self):
         print(f'Titulaire du compte: {self.titulaire}')  
-        print(f'solde actuel {self.solde}')          
-        pass
-# Last point : Revoir la methode retirer.
-personne = CompteBancaire('Paterne')
+        print(f'solde actuel {self.solde} {self.MONNAIE}')  
 
-personne.deposer_montant()
-personne.retirer()
-personne.afficher_solde()
+# Methodes qui testent et récupèrent les entrées des utilisateurs.
+
+    @staticmethod
+    def obtenir_une_valeur_numerique(prompt):
+        while True:
+            a = input(prompt)
+            if not a :
+                print("L'entrée ne peut pas etre vide.")
+                continue
+            try:
+                a_int = int(a)
+            except ValueError:
+                print("Le montant doit etre valide. ")
+                continue
+
+            if a_int < 0:
+                print("Le montant ne peut pas etre négatif.")
+                continue
+
+            return a_int 
+        
+    @staticmethod   
+    def test_entree_choix_client(prompt):
+
+        while True :
+            a = input(prompt)
+
+            try:
+                a_int = int(a)
+               
+            except ValueError:
+                print('Vous devez rentrer un choix valide')
+                continue
+
+            if  a_int == 4 :
+               return 4               
+           
+            if not 1  <=  a_int <=  4:
+                print('Vous devez choisir une des options du menu (1-4).')
+                continue
+
+            return a_int
+    
+            
+# Créer une liste de comptes pour plusieurs clients.
+comptes = [   
+    CompteBancaire('Loubassou', 50000),
+    CompteBancaire('Paterne')
+]
+
+# La fonction qui test et récupère l'entrée (choix) de l'utilisateur.
+def demander_choix_compte_utilisateur():
+    while True:
+        choix_compte_client = input('Répondre (0 pour quitter): ')
+
+        if choix_compte_client == '':
+            print("L'entrée ne peut pas etre vide.")
+            continue
+        try:
+            choix_compte_client_int = int(choix_compte_client)
+            if choix_compte_client_int == 0:
+                return 0
+            
+            if 1  <= choix_compte_client_int <= len(comptes) :           
+                break
+            print(f'Vous devez choisir une des options du menu ({1}-{len(comptes)})')
+
+        except ValueError:
+            print('Vous devez rentrez un choix valide.')
+    return choix_compte_client_int
+
+# La fonction qui affiche la liste des comptes.
+def afficher_liste_comptes(comptes):
+    print("Selectionnez un compte.")
+    for i , compte in enumerate(comptes, start= 1):
+        print(f'{i}. {compte.titulaire}')
+
+
+
+# programme principal.    
+while True: 
+    afficher_liste_comptes(comptes)
+    compte = demander_choix_compte_utilisateur()
+
+    if compte == 0:
+        break
+
+    compte_choisi = comptes[compte - 1]
+    compte_choisi.choix_client()
+
+    reponse = input('Voulez-vous changez de compte ? (o/n): ').lower()
+    if reponse == 'n':
+        print("Merci d'avoir utilisé notre service.")
+        break
+
+
+# Accueuil:
+#     Choix des comptes
+# Menu
+#     Choix des actions: Afficher les infos, etc... (0. Acceuil, 00. Précédent)  
+
+# Actions (deposer de l'argent, Retirer de l'argent)  
+    # deposer de l'argent(0. Acceuil, 00. Précédent)
+#             
+# Last point: Menu interactif(Possibilité de revenir à l'écran de connexion).
+            
+# Constat : 
+    # J'ai deux méthodes qui font à peu près la meme chose. (test_entree_choix_client() et obtenir_une_valeur_numerique() )
+    # Je dois créer une ou des fonctions qui retournent directement une valueur positive entière(Entre un interval)
+
+# point d'améliorations:
+    # Somme minimum et maximun à retirer.
