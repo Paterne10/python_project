@@ -1,5 +1,4 @@
 import sqlite3
-import fonction_requete_sql
 
 # database creation.
 DATABASE_NAME = 'userAccount'
